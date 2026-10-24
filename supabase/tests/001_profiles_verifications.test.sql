@@ -90,7 +90,8 @@ select is(
 
 select lives_ok(
   $$ insert into public.verifications (profile_photo_path, pet_photo_path)
-       values ('carol/face.jpg', 'carol/with-pet.jpg') $$,
+       values ('33333333-3333-3333-3333-333333333333/face.jpg',
+               '33333333-3333-3333-3333-333333333333/with-pet.jpg') $$,
   'An unverified user can submit a verification request'
 );
 
@@ -102,7 +103,8 @@ select is(
 
 select throws_ok(
   $$ insert into public.verifications (profile_photo_path, pet_photo_path)
-       values ('carol/face2.jpg', 'carol/with-pet2.jpg') $$,
+       values ('33333333-3333-3333-3333-333333333333/face2.jpg',
+               '33333333-3333-3333-3333-333333333333/with-pet2.jpg') $$,
   '42501',
   null,
   'A pending user cannot submit a second request'
