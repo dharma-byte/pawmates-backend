@@ -1,0 +1,25 @@
+{
+  "name": "pawmates-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Supabase backend for Pawmates, a pets-only social platform.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dharma-byte/pawmates-backend.git"
+  },
+  "scripts": {
+    "start": "supabase start",
+    "stop": "supabase stop",
+    "status": "supabase status",
+    "db:reset": "supabase db reset",
+    "db:diff": "supabase db diff",
+    "db:push": "supabase db push",
+    "migration:new": "supabase migration new",
+    "test": "supabase test db",
+    "functions:serve": "supabase functions serve",
+    "gen:types": "supabase gen types typescript --local > ../pawmates-web/types/database.ts"
+  },
+  "devDependencies": {
+    "supabase": "2.122.0"
+  }
+}
