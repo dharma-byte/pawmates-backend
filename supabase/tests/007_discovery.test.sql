@@ -2,6 +2,10 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select plan(14);
 
+-- Start from an empty database: dev data from manual testing must not leak into
+-- counts. Everything is rolled back at the end, so real local data is untouched.
+delete from auth.users;
+
 -- Fixtures around Indiranagar, Bengaluru (12.9784, 77.6408):
 --   alice  home         verified, searcher
 --   bob    ~2 km north  verified

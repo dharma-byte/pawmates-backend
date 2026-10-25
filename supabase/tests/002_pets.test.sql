@@ -2,6 +2,10 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select plan(10);
 
+-- Start from an empty database: dev data from manual testing must not leak into
+-- counts. Everything is rolled back at the end, so real local data is untouched.
+delete from auth.users;
+
 -- Fixtures: alice and bob verified, carol unverified.
 insert into auth.users (id, email, email_confirmed_at) values
   ('11111111-1111-1111-1111-111111111111', 'alice@test.dev', now()),
