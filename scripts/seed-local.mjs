@@ -245,6 +245,21 @@ await kavya.client.rpc("create_group", {
 });
 log("groups: you're in Indiranagar Dog Walkers (Sunday pack walk); Bengaluru Cat Parents is nearby");
 
+// 10. Lost & Found: Arjun's Coco slipped her leash; Kavya has spotted her.
+const arjun = clients.arjun;
+const { data: lostId, error: lostError } = await arjun.client.rpc("report_lost_pet", {
+  pet: petIds.arjun, last_seen_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+  lat: 12.9719, lng: 77.6412, last_seen_place: "HAL 2nd Stage, near the bus stop",
+  description: "Small black-and-white Shih Tzu, red collar. Shy with strangers, please don't chase her. Call her name softly.",
+  alert_radius_km: 5,
+});
+if (lostError) throw new Error(`lost report: ${lostError.message}`);
+await kavya.client.rpc("add_lost_sighting", {
+  report: lostId, seen_at: new Date(Date.now() - 40 * 60 * 1000).toISOString(),
+  lat: 12.9745, lng: 77.6448, place: "Outside the Indiranagar metro station", note: "Sniffing around the food stalls, heading east",
+});
+log("lost & found: Arjun's Coco is missing nearby, with one sighting from Kavya");
+
 console.log(`
 Done. Sign in at http://localhost:3000/login with password ${PASSWORD}:
 
