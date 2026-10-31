@@ -16,10 +16,12 @@
     "db:push": "supabase db push",
     "migration:new": "supabase migration new",
     "test": "supabase test db",
+    "seed:local": "node scripts/seed-local.mjs",
     "functions:serve": "supabase functions serve",
     "gen:types": "supabase gen types typescript --local > ../pawmates-web/types/database.ts"
   },
   "devDependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "supabase": "2.122.0"
   }
 }
