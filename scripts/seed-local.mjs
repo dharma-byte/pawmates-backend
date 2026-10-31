@@ -214,6 +214,37 @@ sql(`
 `);
 log("chat with Priya: messages, an upcoming playdate invite and a finished playdate to review");
 
+// 9. Groups: you're in Priya's walking group (with a group chat and an
+// upcoming event); Kavya's cat group is nearby for you to discover.
+const kavya = clients.kavya;
+const { data: walkers, error: gError } = await priya.client.rpc("create_group", {
+  name: "Indiranagar Dog Walkers", kind: "area",
+  description: "Morning and weekend walks around Indiranagar. All sizes welcome, leashes on near the road.",
+});
+if (gError) throw new Error(`group: ${gError.message}`);
+const { data: walkersChat } = await you.client.rpc("join_group", { g: walkers });
+await kavya.client.rpc("join_group", { g: walkers });
+for (const [who, body] of [
+  [priya, "Welcome everyone! 🐾 Post your walk times here."],
+  [kavya, "Misty is a cat so I'll mostly lurk, but I know the best chai stall near the park 😄"],
+]) {
+  await who.client.from("messages").insert({ conversation_id: walkersChat, type: "text", body });
+}
+const sunday = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+sunday.setHours(7, 30, 0, 0);
+const { error: evError } = await priya.client.rpc("create_group_event", {
+  g: walkers, title: "Sunday pack walk", starts_at: sunday.toISOString(), duration_minutes: 90,
+  lat: 12.9763, lng: 77.5929, place_name: "Cubbon Park", address: "Cubbon Park, Kasturba Road, Bengaluru",
+  description: "Easy loop around the park, then water and treats by the bandstand.", capacity: 10,
+  my_pet_ids: [petIds.priya],
+});
+if (evError) throw new Error(`event: ${evError.message}`);
+await kavya.client.rpc("create_group", {
+  name: "Bengaluru Cat Parents", kind: "interest", species: "cat",
+  description: "Tips, vets, sitters and the occasional cat café meetup.",
+});
+log("groups: you're in Indiranagar Dog Walkers (Sunday pack walk); Bengaluru Cat Parents is nearby");
+
 console.log(`
 Done. Sign in at http://localhost:3000/login with password ${PASSWORD}:
 
