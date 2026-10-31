@@ -8,6 +8,7 @@
 // Safe to re-run: it first deletes every *@pawmates.test account.
 // Refuses to run against anything but 127.0.0.1 / localhost.
 import { execSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import { deflateSync } from "node:zlib";
 import { createClient } from "@supabase/supabase-js";
 
@@ -259,6 +260,20 @@ await kavya.client.rpc("add_lost_sighting", {
   lat: 12.9745, lng: 77.6448, place: "Outside the Indiranagar metro station", note: "Sniffing around the food stalls, heading east",
 });
 log("lost & found: Arjun's Coco is missing nearby, with one sighting from Kavya");
+
+// 11. Push notifications: point the local database at the dev server
+// (Docker reaches the host as host.docker.internal), using the secret from
+// pawmates-web/.env.local. Skipped if push isn't set up there.
+const webEnv = "../pawmates-web/.env.local";
+const pushSecret = existsSync(webEnv) && readFileSync(webEnv, "utf8").match(/^PUSH_WEBHOOK_SECRET=(.+)$/m)?.[1].trim();
+if (pushSecret && /^[\w-]+$/.test(pushSecret)) {
+  sql(`delete from vault.secrets where name in ('push_endpoint_url', 'push_webhook_secret');
+       select vault.create_secret('http://host.docker.internal:3000/api/push', 'push_endpoint_url');
+       select vault.create_secret('${pushSecret}', 'push_webhook_secret');`);
+  log("push: local database sends notifications to http://localhost:3000/api/push");
+} else {
+  log("push: skipped (no PUSH_WEBHOOK_SECRET in pawmates-web/.env.local)");
+}
 
 console.log(`
 Done. Sign in at http://localhost:3000/login with password ${PASSWORD}:
